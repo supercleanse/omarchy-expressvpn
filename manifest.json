@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "supercleanse.expressvpn",
+  "name": "ExpressVPN",
+  "version": "1.0.0",
+  "author": "supercleanse",
+  "license": "MIT",
+  "description": "Run ExpressVPN headlessly from the Omarchy bar: live connection state, connect and disconnect, a searchable location picker with favorites, and activation-code login. No ExpressVPN GUI needed.",
+  "homepage": "https://github.com/supercleanse/omarchy-expressvpn",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Widget.qml"
+  },
+  "barWidget": {
+    "displayName": "ExpressVPN",
+    "description": "Shield icon showing ExpressVPN state, with a panel to connect, pick a location and log in.",
+    "category": "Network",
+    "aliases": [
+      "vpn",
+      "expressvpn"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 60
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Status refresh interval (seconds)",
+        "min": 15,
+        "max": 3600,
+        "step": 15,
+        "defaultValue": 60
+      }
+    ]
+  }
+}
