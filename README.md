@@ -97,6 +97,9 @@ typing can't switch locations. Escape closes the panel.
   - A daemon that isn't answering. One-shot commands time out when the daemon is down, while the monitor just waits silently.
 - Region, smart location and IP addresses are re-read after each state change
   and once a minute.
+- The IP rows depend on the state:
+  - Disconnected, the panel shows the public IP.
+  - Connected, it shows the VPN IP, with your home IP dimmed below it. `expressvpnctl get pubip` keeps reporting the pre-VPN address while the tunnel is up, so it is never labeled public then.
 - Every call passes a timeout. Nothing runs with elevated privileges.
 
 ## Login security

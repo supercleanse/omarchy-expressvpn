@@ -51,17 +51,19 @@ case $mode in
   *) state=Disconnected ;;
 esac
 region=usa-new-york
+# Like the real client, pubip keeps reporting the pre-VPN (home) address even
+# while connected; vpnip is the tunnel address.
 pubip=198.51.100.23
 vpnip=Unknown
-if [[ $state == Connected ]]; then
-  pubip=203.0.113.58
-  vpnip=203.0.113.58
-fi
+[[ $state == Connected ]] && vpnip=203.0.113.58
 
 case $cmd in
   "status "*)
     if [[ $mode == logout ]]; then
       echo "Not logged in."
+    elif [[ $state == Connected ]]; then
+      # The real format: no Location line, the region rides on line one.
+      printf 'Connected to %s\n\nProtocol in use: LightwayUdp\nNetwork Lock: enabled when connected\nSplit Tunnel: disabled\n' "$region"
     else
       printf '%s\n\nLocation: %s\nNetwork Lock: enabled when connected\nSplit Tunnel: disabled\n' "$state" "$region"
     fi ;;

@@ -57,6 +57,7 @@ Panel {
   readonly property string kind: Model.kindFor(vpnState, serviceDown, needsLogin)
   readonly property bool engaged: Model.isEngaged(vpnState)
   readonly property bool usable: !serviceDown && !needsLogin
+  readonly property string networkLockText: Model.networkLockLabel(vpnState, networkLock)
 
   // ------------------------------------------------------------ ui state
   property string pendingRegion: ""     // optimistic selection until the daemon agrees
@@ -632,12 +633,21 @@ Panel {
           columnSpacing: Style.space(12)
           rowSpacing: Style.space(3)
 
-          DetailKey { text: "PUBLIC IP" }
-          DetailValue { text: root.pubIp || "—" }
-          DetailKey { text: "VPN IP" }
-          DetailValue { text: root.vpnState === "Connected" && root.vpnIp ? root.vpnIp : "—" }
-          DetailKey { visible: root.networkLock !== ""; text: "NETWORK LOCK" }
-          DetailValue { visible: root.networkLock !== ""; text: root.networkLock }
+          // `get pubip` keeps returning the pre-VPN (home) address while the
+          // tunnel is up, so it is labeled Public IP only while disconnected.
+          // Engaged, the VPN IP comes first and the home IP is shown dimmed.
+          DetailKey { visible: !root.engaged; text: "PUBLIC IP" }
+          DetailValue { visible: !root.engaged; text: root.pubIp || "—" }
+          DetailKey { visible: root.engaged; text: "VPN IP" }
+          DetailValue { visible: root.engaged; text: root.vpnIp || "—" }
+          DetailKey { visible: root.engaged && root.pubIp !== ""; text: "HOME IP" }
+          DetailValue {
+            visible: root.engaged && root.pubIp !== ""
+            text: root.pubIp + "  (hidden)"
+            color: root.dim
+          }
+          DetailKey { visible: root.networkLockText !== ""; text: "NETWORK LOCK" }
+          DetailValue { visible: root.networkLockText !== ""; text: root.networkLockText }
         }
 
         // ---------- Connect / Disconnect ----------

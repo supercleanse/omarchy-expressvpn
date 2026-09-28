@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "supercleanse.expressvpn",
   "name": "ExpressVPN",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "supercleanse",
   "license": "MIT",
   "description": "Run ExpressVPN headlessly from the Omarchy bar: live connection state, connect and disconnect, a searchable location picker with favorites, and activation-code login. No ExpressVPN GUI needed.",

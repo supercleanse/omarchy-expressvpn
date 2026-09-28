@@ -174,8 +174,13 @@ function looksServiceDown(text) {
 }
 
 // `expressvpnctl status` prints the connection state on its first line (or
-// "Not logged in."), then "Key: value" lines such as Location, Network Lock
-// and Split Tunnel.
+// "Not logged in."), then "Key: value" lines. Disconnected, it looks like
+//   Disconnected / Location: <slug> / Network Lock: ... / Split Tunnel: ...
+// and connected, the location rides on the first line instead:
+//   Connected to <slug> / Protocol in use: ... / Network Lock: ... / ...
+// Network Lock reads "disabled", "enabled when connected" or "always
+// enabled". (`get networklock` says false even in "enabled when connected",
+// so the widget never uses it.)
 function parseStatus(text) {
   var out = { state: "", notLoggedIn: false, location: "", networkLock: "", splitTunnel: "" }
   var raw = String(text || "")
@@ -194,7 +199,11 @@ function parseStatus(text) {
     }
     if (out.state === "") {
       var st = normalizeState(line.split(/\s+/)[0])
-      if (st !== "") out.state = st
+      if (st !== "") {
+        out.state = st
+        var to = line.match(/^\S+\s+to\s+(\S+)\s*$/i)
+        if (to && out.location === "") out.location = to[1]
+      }
     }
   }
   return out
@@ -206,11 +215,23 @@ function cleanIp(v) {
   return /^[0-9a-f.:]+$/i.test(s) ? s : ""
 }
 
+// Network Lock as shown in the panel: "on" while it is actually engaged,
+// otherwise the daemon's own wording.
+function networkLockLabel(state, raw) {
+  var v = String(raw || "").trim()
+  if (v === "") return ""
+  if (state === "Connected" && /^enabled when connected$/i.test(v)) return "on"
+  return v
+}
+
+// `get pubip` keeps reporting the pre-VPN (home) address while the tunnel is
+// up, so it is only ever called the public IP while disconnected. When the
+// VPN is engaged, only the VPN IP is offered.
 function tooltip(state, serviceDown, needsLogin, region, vpnIp, pubIp) {
   var lines = ["ExpressVPN: " + stateLabel(state, serviceDown, needsLogin)]
   if (!serviceDown && !needsLogin) {
     if (region) lines.push(prettyRegion(region))
-    if (state === "Connected" && vpnIp) lines.push("VPN IP " + vpnIp)
+    if (isEngaged(state)) { if (vpnIp) lines.push("VPN IP " + vpnIp) }
     else if (pubIp) lines.push("Public IP " + pubIp)
   }
   return lines.join("\n")
