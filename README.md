@@ -39,7 +39,8 @@ disconnect, pick a location and log in. The ExpressVPN GUI is not needed.
 ## Requirements
 
 - Omarchy with the Quickshell-based `omarchy-shell`.
-- The ExpressVPN Linux client, version 5.0.1 or later, which ships
+- The [ExpressVPN Linux client](https://www.expressvpn.com/vpn-software/vpn-linux)
+  (proprietary, from ExpressVPN), version 5.0.1 or later, which ships
   `expressvpnctl`. The widget calls `/usr/bin/expressvpnctl`.
 - The daemon running at boot:
 
@@ -66,6 +67,17 @@ This adds the `supercleanse.expressvpn` widget to your bar. Use
 the old version, run `omarchy restart shell`.
 
 Favorites are stored in `~/.config/supercleanse-expressvpn/config.json`.
+
+## Remove
+
+```sh
+omarchy plugin remove supercleanse.expressvpn
+rm -rf ~/.config/supercleanse-expressvpn   # saved favorites
+```
+
+The ExpressVPN client, its daemon, your login, and any open connection are left
+exactly as they are. Disconnect first with `expressvpnctl disconnect` if you want
+the VPN off.
 
 ## IPC and keybinding
 
